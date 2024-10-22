@@ -1,6 +1,8 @@
 # Whoamifuck
 
-Whoamifuck 是 Eonian sharp 的第一个开源工具。这是一个最初由 shell 编写的用于检测入侵者的工具，经过功能更新后，不仅限于检查用户的登录信息。
+Whoamifuck 是 zhuima 的第一个`Rust`命令行开源工具。这是一个最初由 Shell 编写的用于检测入侵者的工具，本人使用Rust复刻了 Shell 版的完整的功能。
+
+本仓库是`Rust`版本，Shell 版请参考[原版](https://github.com/enomothem/Whoamifuck)
 
 ## 功能特点
 
