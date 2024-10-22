@@ -1,0 +1,11 @@
+[package]
+name = "Whoamifuck"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.20", features = ["derive"] }
+tokio = { version = "1.40.0", features = ["full", "macros"] }
+serde = { version = "1.0", features = ["derive"] }
+bunt = "0.2.6"
+url = "2.4.0"
