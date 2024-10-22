@@ -1,6 +1,6 @@
 # Whoamifuck
 
-Whoamifuck 是 zhuima 的第一个`Rust`命令行开源工具。这是一个最初由 Shell 编写的用于检测入侵者的工具，本人使用Rust复刻了 Shell 版的完整的功能。
+Whoamifuck 是 zhuima 的第一个 `Rust` 命令行开源工具。这是一个最初由 Shell 编写的用于检测入侵者的工具，本人使用Rust复刻了 Shell 版的完整的功能。
 
 本仓库是`Rust`版本，Shell 版请参考[原版](https://github.com/enomothem/Whoamifuck)
 
