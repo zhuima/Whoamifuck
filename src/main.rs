@@ -1,12 +1,9 @@
 use std::path::PathBuf;
+use std::str::FromStr;
 use url::Url;
 
-use clap::{Parser, Subcommand, ValueEnum};
+use clap::{Parser, Subcommand};
 use tokio;
-
-
-
-
 
 #[derive(Parser)]
 #[command(name="Whoamifuck", author, version, about="Whoamifuck，Eonian sharp's first open source tool. This is a tool written by shell to detect intruders, after the function update, is not limited to checking users' login information.", long_about = None)]
@@ -31,13 +28,12 @@ enum Commands {
     OUTPUT(Output),
 }
 
-
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 enum FileOrUrl {
     File(PathBuf),
     Url(Url),
 }
-
 
 #[derive(Parser, Debug)]
 #[command(name="quick", author, version, about="", long_about = None)]
@@ -46,7 +42,12 @@ struct Quick {
     #[arg(short, long, help = "The device name of the user")]
     user_device: String,
 
-    #[arg(short, long, help = "The login name of the user", default_value = "[default:/var/log/secure;/var/log/auth.log]")]
+    #[arg(
+        short,
+        long,
+        help = "The login name of the user",
+        default_value = "[default:/var/log/secure;/var/log/auth.log]"
+    )]
     login: String,
 
     #[arg(short, long, help = "basic output")]
@@ -68,7 +69,6 @@ struct Special {
 
     #[arg(short, long, help = "check system status information")]
     os_status: String,
-
 }
 
 #[derive(Parser, Debug)]
@@ -84,18 +84,34 @@ struct Risk {
     #[arg(short, long, help = "check system rootkit information")]
     rootkitcheck: String,
 
-
-    #[arg(short, long, help = "check web shell information", default_value = "[default:/var/www/;/www/wwwroot/..]")]
+    #[arg(
+        short,
+        long,
+        help = "check web shell information",
+        default_value = "[default:/var/www/;/www/wwwroot/..]"
+    )]
     webshell: String,
+}
 
+// Add this implementation for FileOrUrl
+impl FromStr for FileOrUrl {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if let Ok(url) = Url::parse(s) {
+            Ok(FileOrUrl::Url(url))
+        } else {
+            Ok(FileOrUrl::File(PathBuf::from(s)))
+        }
+    }
 }
 
 #[derive(Parser, Debug, Clone)]
 #[command(name="misc", author, version, about="", long_about = None)]
 struct Misc {
     // Add fields specific to MISC command
-    #[arg(short, long, help = "check page live status")]
-    code: Option<FileOrUrl>,
+    #[arg(short, long, help = "check page live status (URL or file path)")]
+    code: FileOrUrl,
 
     #[arg(short, long, help = "check user information")]
     sqletlog: PathBuf,
@@ -103,9 +119,13 @@ struct Misc {
     #[arg(short, long, help = "set crontab information")]
     auto_run: String,
 
-    #[arg(short, long, help = "custom command define test", default_value = "[default:~/.whok/chief-inspector.conf]")]
+    #[arg(
+        short,
+        long,
+        help = "custom command define test",
+        default_value = "[default:~/.whok/chief-inspector.conf]"
+    )]
     ext: std::path::PathBuf,
-
 }
 
 #[derive(Parser, Debug)]
@@ -125,7 +145,6 @@ async fn main() {
 
     cli.version = "1.0.0".to_string();
 
-    
     match &cli.command {
         Commands::QUICK(quick) => println!("QUICK: {:?}", quick),
         Commands::SPECIAL(special) => println!("SPECIAL: {:?}", special),
