@@ -1,8 +1,5 @@
 # 项目名称
 PROJECT_NAME := whoamifuck
-AUTHOR := zhuima
-VERSION := 0.1.0
-DESCRIPTION := Whoamifuck，zhuima first open source tool. This is a tool written by rust to detect intruders, after the function update, is not limited to checking users' login information.
 
 # 目标平台
 PLATFORMS := linux darwin windows

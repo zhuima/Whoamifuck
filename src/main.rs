@@ -1,16 +1,32 @@
 #![warn(clippy::all, clippy::pedantic)]
 use clap::{Parser, Subcommand};
-use std::path::PathBuf;
-use std::str::FromStr;
-use url::Url;
+use commands::{misc::Misc, output::Output, quick::Quick, risk::Risk, special::Special};
+use std::process;
+
+mod commands;
+mod utils; // 导入 utils 模块
+
+const BANNER: &str = r"
+__        __   _                            _____ _    _  ______ _  __
+\ \      / /__| | ___ ___  _ __ ___   ___  |  ___| |  | |  ____| |/ /
+ \ \ /\ / / _ \ |/ __/ _ \| '_ ` _ \ / _ \ | |_  | |  | | |__  | ' / 
+  \ V  V /  __/ | (_| (_) | | | | | |  __/ |  _| | |__| |  __| | . \ 
+   \_/\_/ \___|_|\___\___/|_| |_| |_|\___| |_| who! \____/|_|    |_|\_\
+                                                                     
+";
 
 #[derive(Parser)]
-#[command(name="Whoamifuck", author, version, about="Whoamifuck，zhuima first open source tool. This is a tool written by rust to detect intruders, after the function update, is not limited to checking users' login information.", long_about = None)]
+#[command(
+    name = "Whoamifuck",
+    author,
+    version,
+    about = "Whoamifuck，zhuima first open source tool. This is a tool written by rust to detect intruders, after the function update, is not limited to checking users' login information.",
+    long_about = None,
+    before_help = BANNER
+)]
 struct Cli {
     #[command(subcommand)]
-    command: Commands,
-    // #[arg(short, long)]
-    // version: String,
+    command: Option<Commands>,
 }
 
 #[derive(Subcommand)]
@@ -27,128 +43,24 @@ enum Commands {
     Output(Output),
 }
 
-#[allow(dead_code)]
-#[derive(Debug, Clone)]
-enum FileOrUrl {
-    File(PathBuf),
-    Url(Url),
-}
-
-#[derive(Parser, Debug)]
-#[command(name="quick", author, version, about="", long_about = None)]
-struct Quick {
-    // Add fields specific to QUICK command
-    #[arg(short, long, help = "The device name of the user")]
-    user_device: String,
-
-    #[arg(
-        short,
-        long,
-        help = "The login name of the user",
-        default_value = "[default:/var/log/secure;/var/log/auth.log]"
-    )]
-    login: String,
-
-    #[arg(short, long, help = "basic output")]
-    nomal: bool,
-
-    #[arg(short, long, help = "full output")]
-    all: bool,
-}
-
-#[derive(Parser, Debug)]
-#[command(name="special", author, version, about="", long_about = None)]
-struct Special {
-    // Add fields specific to SPECIAL command
-    #[arg(short, long, help = "check user process and service status")]
-    proc_serv: String,
-
-    #[arg(short, long, help = "check user port open status")]
-    port: i32,
-
-    #[arg(short, long, help = "check system status information")]
-    os_status: String,
-}
-
-#[derive(Parser, Debug)]
-#[command(name="risk", author, version, about="", long_about = None)]
-struct Risk {
-    // Add fields specific to RISK command
-    #[arg(short, long, help = "security baseline check")]
-    baseline: String,
-
-    #[arg(short, long, help = "check system vulnerability information")]
-    risks: String,
-
-    #[arg(short, long, help = "check system rootkit information")]
-    rootkitcheck: String,
-
-    #[arg(
-        short,
-        long,
-        help = "check web shell information",
-        default_value = "[default:/var/www/;/www/wwwroot/..]"
-    )]
-    webshell: String,
-}
-
-// Add this implementation for FileOrUrl
-impl FromStr for FileOrUrl {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if let Ok(url) = Url::parse(s) {
-            Ok(FileOrUrl::Url(url))
-        } else {
-            Ok(FileOrUrl::File(PathBuf::from(s)))
-        }
-    }
-}
-
-#[derive(Parser, Debug, Clone)]
-#[command(name="misc", author, version, about="", long_about = None)]
-struct Misc {
-    // Add fields specific to MISC command
-    #[arg(short, long, help = "check page live status (URL or file path)")]
-    code: FileOrUrl,
-
-    #[arg(short, long, help = "check user information")]
-    sqletlog: PathBuf,
-
-    #[arg(short, long, help = "set crontab information")]
-    auto_run: String,
-
-    #[arg(
-        short,
-        long,
-        help = "custom command define test",
-        default_value = "[default:~/.whok/chief-inspector.conf]"
-    )]
-    ext: std::path::PathBuf,
-}
-
-#[derive(Parser, Debug)]
-#[command(name="output", author, version, about="", long_about = None)]
-struct Output {
-    // Add fields specific to OUTPUT command
-    #[arg(short, long, help = "output to file")]
-    output: String,
-
-    #[arg(short, long, help = "output to terminal")]
-    html: bool,
-}
-
 #[tokio::main]
 async fn main() {
     let cli = Cli::parse();
 
-    // cli.version = "1.0.0".to_string();
-
-    match &cli.command {
-        Commands::Quick(quick) => println!("QUICK: {quick:?}"),
-        Commands::Special(special) => println!("SPECIAL: {special:?}"),
-        Commands::Risk(risk) => println!("RISK: {risk:?}"),
-        Commands::Misc(misc) => println!("MISC: {misc:?}"),
-        Commands::Output(output) => println!("OUTPUT: {output:?}"),
+    #[allow(clippy::single_match_else)]
+    match cli.command {
+        Some(command) => match command {
+            Commands::Quick(quick) => println!("QUICK: {quick:?}"),
+            Commands::Special(special) => println!("SPECIAL: {special:?}"),
+            Commands::Risk(risk) => println!("RISK: {risk:?}"),
+            Commands::Misc(misc) => println!("MISC: {misc:?}"),
+            Commands::Output(output) => println!("OUTPUT: {output:?}"),
+        },
+        None => {
+            // 打印帮助信息
+            Cli::parse_from(["Whoamifuck", "--help"]);
+            // 正常退出，退出码为 0
+            process::exit(0);
+        }
     }
 }
