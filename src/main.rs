@@ -1,31 +1,30 @@
+#![warn(clippy::all, clippy::pedantic)]
+use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 use std::str::FromStr;
 use url::Url;
 
-use clap::{Parser, Subcommand};
-use tokio;
-
 #[derive(Parser)]
-#[command(name="Whoamifuck", author, version, about="Whoamifuck，Eonian sharp's first open source tool. This is a tool written by shell to detect intruders, after the function update, is not limited to checking users' login information.", long_about = None)]
+#[command(name="Whoamifuck", author, version, about="Whoamifuck，zhuima first open source tool. This is a tool written by rust to detect intruders, after the function update, is not limited to checking users' login information.", long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
-    #[arg(short, long)]
-    version: String,
+    // #[arg(short, long)]
+    // version: String,
 }
 
 #[derive(Subcommand)]
 enum Commands {
     #[command(about = "Quick command for basic operations")]
-    QUICK(Quick),
+    Quick(Quick),
     #[command(about = "Special command for advanced operations")]
-    SPECIAL(Special),
+    Special(Special),
     #[command(about = "Risk assessment command")]
-    RISK(Risk),
+    Risk(Risk),
     #[command(about = "Miscellaneous command for various tasks")]
-    MISC(Misc),
+    Misc(Misc),
     #[command(about = "Output command for generating reports")]
-    OUTPUT(Output),
+    Output(Output),
 }
 
 #[allow(dead_code)]
@@ -79,7 +78,7 @@ struct Risk {
     baseline: String,
 
     #[arg(short, long, help = "check system vulnerability information")]
-    risk: String,
+    risks: String,
 
     #[arg(short, long, help = "check system rootkit information")]
     rootkitcheck: String,
@@ -141,15 +140,15 @@ struct Output {
 
 #[tokio::main]
 async fn main() {
-    let mut cli = Cli::parse();
+    let cli = Cli::parse();
 
-    cli.version = "1.0.0".to_string();
+    // cli.version = "1.0.0".to_string();
 
     match &cli.command {
-        Commands::QUICK(quick) => println!("QUICK: {:?}", quick),
-        Commands::SPECIAL(special) => println!("SPECIAL: {:?}", special),
-        Commands::RISK(risk) => println!("RISK: {:?}", risk),
-        Commands::MISC(misc) => println!("MISC: {:?}", misc),
-        Commands::OUTPUT(output) => println!("OUTPUT: {:?}", output),
+        Commands::Quick(quick) => println!("QUICK: {quick:?}"),
+        Commands::Special(special) => println!("SPECIAL: {special:?}"),
+        Commands::Risk(risk) => println!("RISK: {risk:?}"),
+        Commands::Misc(misc) => println!("MISC: {misc:?}"),
+        Commands::Output(output) => println!("OUTPUT: {output:?}"),
     }
 }
