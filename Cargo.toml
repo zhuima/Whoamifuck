@@ -1,11 +1,13 @@
 [package]
-name = "Whoamifuck"
+name = "whoamifuck"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-clap = { version = "4.5.20", features = ["derive"] }
-tokio = { version = "1.40.0", features = ["full", "macros"] }
-serde = { version = "1.0", features = ["derive"] }
-bunt = "0.2.6"
-url = "2.4.0"
+clap = { version = "4.0", features = ["derive", "cargo"] }
+tokio = { version = "1", features = ["full"] }
+url = "2.3.1"
+sysinfo = "0.29.0"  # 用于获取进程信息
+
+[build-dependencies]
+chrono = "0.4"

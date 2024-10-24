@@ -1,10 +1,20 @@
 #![warn(clippy::all, clippy::pedantic)]
 use clap::{Parser, Subcommand};
 use commands::{misc::Misc, output::Output, quick::Quick, risk::Risk, special::Special};
+use std::env;
 use std::process;
 
 mod commands;
 mod utils; // 导入 utils 模块
+
+const VERSION_INFO: &str = concat!(
+    env!("CARGO_PKG_VERSION"),
+    " (commit: ",
+    env!("GIT_HASH"),
+    ", built on: ",
+    env!("BUILD_DATE"),
+    ")"
+);
 
 const BANNER: &str = r"
 __        __   _                            _____ _    _  ______ _  __
@@ -18,9 +28,9 @@ __        __   _                            _____ _    _  ______ _  __
 #[derive(Parser)]
 #[command(
     name = "Whoamifuck",
-    author,
-    version,
-    about = "Whoamifuck，zhuima first open source tool. This is a tool written by rust to detect intruders, after the function update, is not limited to checking users' login information.",
+    author = env!("CARGO_PKG_AUTHORS"),
+    version = VERSION_INFO,
+    about = "Whoamifuck，zhuima first open source tool. This is a tool written in Rust to detect intruders, after the function update, is not limited to checking users' login information.",
     long_about = None,
     before_help = BANNER
 )]
@@ -51,7 +61,12 @@ async fn main() {
     match cli.command {
         Some(command) => match command {
             Commands::Quick(quick) => println!("QUICK: {quick:?}"),
-            Commands::Special(special) => println!("SPECIAL: {special:?}"),
+            Commands::Special(special) => {
+                if let Err(e) = special.run() {
+                    eprintln!("Error: {e}");
+                    process::exit(1);
+                }
+            }
             Commands::Risk(risk) => println!("RISK: {risk:?}"),
             Commands::Misc(misc) => println!("MISC: {misc:?}"),
             Commands::Output(output) => println!("OUTPUT: {output:?}"),
