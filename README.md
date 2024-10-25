@@ -25,6 +25,86 @@ cargo build --release
 ```
 
 
+## 程序流程图
+
+以下是 Whoamifuck 主要程序流程的时序图：
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Main
+    participant Cli
+    participant Commands
+    participant Special
+    participant System
+
+    User->>Main: Run program
+    activate Main
+
+    Main->>Cli: parse()
+    activate Cli
+    Cli-->>Main: Parsed CLI
+    deactivate Cli
+
+    Main->>Commands: match command
+    activate Commands
+
+    alt Quick command
+        Commands->>Main: Print "QUICK: {quick:?}"
+    else Special command
+        Commands->>Special: run()
+        activate Special
+        Special->>System: new_all()
+        activate System
+        System-->>Special: system
+        Special->>System: refresh_all()
+        
+        alt proc_serv flag set
+            Special->>Special: fk_procserv(&system)
+            Special->>System: processes()
+            System-->>Special: process list
+        end
+        
+        alt port flag set
+            Special->>Special: fk_portstatus(&system)
+            Special->>System: networks()
+            System-->>Special: network data
+        end
+        
+        alt os_status flag set
+            Special->>Special: check_system_status(&system)
+            Special->>System: various system info calls
+            System-->>Special: system information
+        end
+        
+        Special-->>Commands: Result
+        deactivate Special
+        deactivate System
+        
+        alt Error occurred
+            Commands->>Main: Print error and exit(1)
+        end
+    else Risk command
+        Commands->>Main: Print "RISK: {risk:?}"
+    else Misc command
+        Commands->>Main: Print "MISC: {misc:?}"
+    else Output command
+        Commands->>Main: Print "OUTPUT: {output:?}"
+    else No command (None)
+        Commands->>Cli: parse_from(["Whoamifuck", "--help"])
+        Cli-->>Commands: Help information
+        Commands->>Main: Print help and exit(0)
+    end
+
+    deactivate Commands
+
+    Main-->>User: Program output
+    deactivate Main
+```
+
+
+
+
 ## 使用指南
 
 Whoamifuck 使用 Clap 库来构建命令行界面。以下是主要命令的使用方法：
@@ -132,3 +212,5 @@ zhuima314@gmail.com
 - [Clap 文档, 案例二](https://mp.weixin.qq.com/s/QJPq7pEvxzeYsL5U9W_CyA)
 - [Clap 文档, 案例三](https://mp.weixin.qq.com/s/ZjV31-zaO_3OWzwoT1gjjg)
 - [Clap 文档, 案例四](https://mp.weixin.qq.com/s/ZjV31-zaO_3OWzwoT1gjjg)
+
+

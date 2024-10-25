@@ -8,6 +8,8 @@ clap = { version = "4.0", features = ["derive", "cargo"] }
 tokio = { version = "1", features = ["full"] }
 url = "2.3.1"
 sysinfo = "0.29.0"  # 用于获取进程信息
+byte-unit = "5.1.4"
+
 
 [build-dependencies]
 chrono = "0.4"
