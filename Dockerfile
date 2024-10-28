@@ -1,10 +1,35 @@
 # 使用更新的 Rust 版本
 FROM rust:1.74-slim as builder
+
+# 安装构建依赖
+RUN apt-get update && \
+    apt-get install -y \
+    git \
+    pkg-config \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /usr/src/whoamifuck
 COPY . .
+
+# 设置构建环境变量
+ENV RUST_BACKTRACE=1
+
+# 构建项目
 RUN cargo build --release
 
+# 使用更小的基础镜像
 FROM debian:bullseye-slim
-RUN apt-get update && apt-get install -y systemctl && rm -rf /var/lib/apt/lists/*
+
+# 安装运行时依赖
+RUN apt-get update && \
+    apt-get install -y \
+    systemctl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# 复制构建产物
 COPY --from=builder /usr/src/whoamifuck/target/release/whoamifuck /usr/local/bin/whoamifuck
+
+# 设置入口点
 ENTRYPOINT ["whoamifuck"]
