@@ -60,7 +60,12 @@ async fn main() {
     #[allow(clippy::single_match_else)]
     match cli.command {
         Some(command) => match command {
-            Commands::Quick(quick) => println!("QUICK: {quick:?}"),
+            Commands::Quick(quick) => {
+                if let Err(e) = quick.run() {
+                    eprintln!("Error: {e}");
+                    process::exit(1);
+                }
+            }
             Commands::Special(special) => {
                 if let Err(e) = special.run() {
                     eprintln!("Error: {e}");
