@@ -10,7 +10,13 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/whoamifuck
+
+# 初始化 git 仓库
+COPY .git ./.git
 COPY . .
+
+# 确保 git 仓库正确初始化
+RUN git config --global --add safe.directory /usr/src/whoamifuck
 
 # 设置构建环境变量
 ENV RUST_BACKTRACE=1
