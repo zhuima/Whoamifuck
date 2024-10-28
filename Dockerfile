@@ -1,4 +1,5 @@
-FROM rust:1.70-slim as builder
+# 使用更新的 Rust 版本
+FROM rust:1.74-slim as builder
 WORKDIR /usr/src/whoamifuck
 COPY . .
 RUN cargo build --release
