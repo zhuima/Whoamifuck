@@ -72,7 +72,12 @@ async fn main() {
                     process::exit(1);
                 }
             }
-            Commands::Risk(risk) => println!("RISK: {risk:?}"),
+            Commands::Risk(risk) => {
+                if let Err(e) = risk.run() {
+                    eprintln!("Error: {e}");
+                    process::exit(1);
+                }
+            }
             Commands::Misc(misc) => println!("MISC: {misc:?}"),
             Commands::Output(output) => println!("OUTPUT: {output:?}"),
         },
