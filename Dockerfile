@@ -27,10 +27,10 @@ RUN cargo build --release
 # 使用更小的基础镜像
 FROM debian:bullseye-slim
 
-# 安装运行时依赖
+# 安装运行时依赖，移除 systemctl
 RUN apt-get update && \
     apt-get install -y \
-    systemctl \
+    procps \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
