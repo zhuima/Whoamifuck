@@ -2,14 +2,22 @@ name: Release
 
 on:
   push:
+    branches: [ "main", "master" ]  # 添加分支触发
     tags:
       - 'v*'
-  workflow_dispatch:
+  pull_request:
+    branches: [ "main", "master" ]  # 添加 PR 触发
+  workflow_dispatch:  # 保留手动触发
 
 env:
   CARGO_TERM_COLOR: always
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+
+permissions:  # 添加顶级权限配置
+  contents: write
+  packages: write
+  pull-requests: write
 
 jobs:
   build-and-test:
@@ -17,14 +25,47 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          fetch-depth: 0  # 获取完整的 git 历史
+          submodules: 'recursive'  # 如果有子模块，确保也被检出
+      
+      - name: Setup git
+        run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          
+      - name: Install dependencies  # 添加依赖安装
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y systemctl
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: "1.74.0"  # 指定 Rust 版本
           override: true
-      - uses: actions-rs/cargo@v1
+          components: rustfmt, clippy  # 添加代码格式化和 lint 工具
+
+      - name: Check formatting
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+
+      - name: Clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: -- -D warnings
+
+      - name: Run tests
+        uses: actions-rs/cargo@v1
         with:
           command: test
-      - uses: actions-rs/cargo@v1
+
+      - name: Build
+        uses: actions-rs/cargo@v1
         with:
           command: build
           args: --release
@@ -58,7 +99,7 @@ jobs:
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: "1.74.0"  # 指定 Rust 版本
           target: ${{ matrix.target }}
           override: true
 
