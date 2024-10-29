@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Security Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-8">System Security Report</h1>
+        
+        <!-- 系统信息 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">System Information</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-gray-600">Hostname: {{ system_info.hostname }}</p>
+                    <p class="text-gray-600">OS Version: {{ system_info.os_version }}</p>
+                    <p class="text-gray-600">Kernel: {{ system_info.kernel_version }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-600">CPU Usage: {{ system_info.cpu_usage }}%</p>
+                    <p class="text-gray-600">Memory Usage: {{ system_info.memory_usage }}%</p>
+                    <p class="text-gray-600">Disk Usage: {{ system_info.disk_usage }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 进程信息 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Process Information</h2>
+            <pre class="bg-gray-50 p-4 rounded">{{ process_info }}</pre>
+        </div>
+
+        <!-- 网络信息 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Network Information</h2>
+            <pre class="bg-gray-50 p-4 rounded">{{ network_info }}</pre>
+        </div>
+
+        <!-- 用户信息 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">User Information</h2>
+            <pre class="bg-gray-50 p-4 rounded">{{ user_info }}</pre>
+        </div>
+
+        <!-- 历史记录 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Command History</h2>
+            <pre class="bg-gray-50 p-4 rounded">{{ history_info }}</pre>
+        </div>
+
+        <!-- 计划任务 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Crontab Information</h2>
+            <pre class="bg-gray-50 p-4 rounded">{{ crontab_info }}</pre>
+        </div>
+
+        <!-- 文件信息 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">File Information</h2>
+            <pre class="bg-gray-50 p-4 rounded">{{ file_info }}</pre>
+        </div>
+
+        <div class="text-center text-gray-500 text-sm mt-8">
+            Generated at {{ timestamp }}
+        </div>
+    </div>
+</body>
+</html> 

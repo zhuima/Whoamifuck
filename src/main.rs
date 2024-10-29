@@ -78,8 +78,18 @@ async fn main() -> anyhow::Result<()> {
                     process::exit(1);
                 }
             }
-            Commands::Misc(misc) => println!("MISC: {misc:?}"),
-            Commands::Output(output) => println!("OUTPUT: {output:?}"),
+            Commands::Misc(misc) => {
+                if let Err(e) = misc.run().await {
+                    eprintln!("Error: {e}");
+                    process::exit(1);
+                }
+            }
+            Commands::Output(output) => {
+                if let Err(e) = output.run() {
+                    eprintln!("Error: {e}");
+                    process::exit(1);
+                }
+            }
         },
         None => {
             // 打印帮助信息
