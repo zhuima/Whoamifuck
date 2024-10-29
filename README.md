@@ -19,7 +19,7 @@ Whoamifuck 是 zhuima 的第一个 `Rust` 命令行开源工具。这是一个�
 然后，克隆此仓库并编译项目：
 
 ```bash
-git clone https://github.com/your-username/whoamifuck.git
+git clone https://github.com/zhuima/Whoamifuck.git
 cd whoamifuck
 cargo build --release
 ```
