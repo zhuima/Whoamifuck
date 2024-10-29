@@ -39,7 +39,7 @@ struct Cli {
     command: Option<Commands>,
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Debug)]
 enum Commands {
     #[command(about = "Quick command for basic operations")]
     Quick(Quick),
@@ -54,7 +54,7 @@ enum Commands {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     #[allow(clippy::single_match_else)]
@@ -88,4 +88,5 @@ async fn main() {
             process::exit(0);
         }
     }
+    Ok(())
 }

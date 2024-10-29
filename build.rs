@@ -1,9 +1,10 @@
-use chrono::Utc;
+use chrono::{FixedOffset, Utc};
 use std::process::Command;
 
 fn main() {
     let git_hash = get_git_hash().unwrap_or_else(|_| String::from("unknown"));
-    let build_date = Utc::now().format("%Y-%m-%d").to_string();
+    let local_time = Utc::now().with_timezone(&FixedOffset::east_opt(8 * 3600).unwrap());
+    let build_date = local_time.format("%Y-%m-%d %H:%M:%S").to_string();
 
     println!("cargo:rustc-env=GIT_HASH={}", git_hash);
     println!("cargo:rustc-env=BUILD_DATE={}", build_date);

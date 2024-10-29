@@ -1,5 +1,6 @@
 use byte_unit::{Byte, UnitType};
 use clap::Parser;
+use mac_address::get_mac_address;
 use std::net::{Ipv4Addr, SocketAddrV4, TcpStream};
 use std::process::Command;
 use std::time::Duration;
@@ -156,6 +157,12 @@ impl Special {
         println!("  System kernel version: {:?}", system.kernel_version());
         println!("  System OS version: {:?}", system.os_version());
         println!("  System host name: {:?}", system.host_name());
+
+        match get_mac_address() {
+            Ok(Some(addr)) => println!("  MAC Address: {addr}"),
+            Ok(None) => println!("  MAC Address: No MAC address found"),
+            Err(e) => println!("  MAC Address: Error getting MAC address: {e:?}"),
+        }
 
         Ok(())
     }

@@ -1,7 +1,9 @@
 [package]
 name = "whoamifuck"
-version = "0.1.0"
+version = "0.3.0"
 edition = "2021"
+authors = ["zhuima <zhuima@gmail.com>"]
+description = "Whoamifuck 是 zhuima 的第一个 `Rust` 命令行开源工具。这是一个最初由 Shell 编写的用于检测入侵者的工具，本人使用Rust复刻了 Shell 版的完整的功能。"
 
 [dependencies]
 clap = { version = "4.0", features = ["derive", "cargo"] }
@@ -9,6 +11,8 @@ tokio = { version = "1", features = ["full"] }
 url = "2.3.1"
 sysinfo = "0.29.0"  # 用于获取进程信息
 byte-unit = "5.1.4"
+anyhow = "1.0.91"
+mac_address = "1.1.7"
 
 
 [build-dependencies]
