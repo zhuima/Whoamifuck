@@ -13,11 +13,10 @@ sysinfo = "0.29.0"  # 用于获取进程信息
 byte-unit = "5.1.4"
 anyhow = "1.0.91"
 mac_address = "1.1.7"
-reqwest = { version = "0.11", features = ["json"] }
+reqwest = { version = "0.11", features = ["json", "native-tls"] }
 regex = "1.5"
 chrono = "0.4"
 askama = "0.12"  # 添加模板引擎依赖
-
 
 [build-dependencies]
 chrono = "0.4"
