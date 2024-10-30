@@ -1,6 +1,6 @@
 [package]
 name = "whoamifuck"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 authors = ["zhuima <zhuima@gmail.com>"]
 description = "Whoamifuck 是 zhuima 的第一个 `Rust` 命令行开源工具。这是一个最初由 Shell 编写的用于检测入侵者的工具，本人使用Rust复刻了 Shell 版的完整的功能。"
@@ -17,6 +17,7 @@ reqwest = { version = "0.11", features = ["json"] }
 regex = "1.5"
 chrono = "0.4"
 askama = "0.12"  # 添加模板引擎依赖
+
 
 [build-dependencies]
 chrono = "0.4"

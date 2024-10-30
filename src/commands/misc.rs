@@ -104,7 +104,7 @@ impl Misc {
             bytes,
             title
         );
-        println!("\x1b[35m{output}\x1b[0m");
+        println!("\x1b[31m{output}\x1b[0m");
         output_file.write_all(output.as_bytes())?;
 
         Ok(())
@@ -148,7 +148,7 @@ impl Misc {
                             bytes,
                             title
                         );
-                        println!("\x1b[35m{output}\x1b[0m");
+                        println!("\x1b[31m{output}\x1b[0m");
                         output_file.write_all(output.as_bytes())?;
                     }
                     Err(e) => {
@@ -279,7 +279,7 @@ impl Misc {
                     line,
                     "-".repeat(80)
                 );
-                println!("\x1b[31m{}\x1b[0m", output);
+                println!("\x1b[31m{output}\x1b[0m");
                 output_file.write_all(output.as_bytes())?;
             }
         }

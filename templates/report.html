@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Security Report</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-100">
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold text-center mb-8">System Security Report</h1>
-        
+
         <!-- 系统信息 -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">System Information</h2>
@@ -18,11 +20,13 @@
                     <p class="text-gray-600">Hostname: {{ system_info.hostname }}</p>
                     <p class="text-gray-600">OS Version: {{ system_info.os_version }}</p>
                     <p class="text-gray-600">Kernel: {{ system_info.kernel_version }}</p>
+                    <p class="text-gray-600">MAC Address: {{ system_info.mac_address }}</p>
+                    <p class="text-gray-600">IP Address: {{ system_info.ip_address }}</p>
                 </div>
                 <div>
-                    <p class="text-gray-600">CPU Usage: {{ system_info.cpu_usage }}%</p>
-                    <p class="text-gray-600">Memory Usage: {{ system_info.memory_usage }}%</p>
-                    <p class="text-gray-600">Disk Usage: {{ system_info.disk_usage }}</p>
+                    <p class="text-gray-600">CPU: {{ system_info.cpu_usage }}</p>
+                    <p class="text-gray-600">Memory: {{ system_info.memory_usage }}</p>
+                    <p class="text-gray-600">Disk: {{ system_info.disk_usage }}</p>
                 </div>
             </div>
         </div>
@@ -36,7 +40,9 @@
         <!-- 网络信息 -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Network Information</h2>
-            <pre class="bg-gray-50 p-4 rounded">{{ network_info }}</pre>
+            <div class="overflow-x-auto">
+                <pre class="bg-gray-50 p-4 rounded whitespace-pre-wrap break-all">{{ network_info }}</pre>
+            </div>
         </div>
 
         <!-- 用户信息 -->
@@ -68,4 +74,5 @@
         </div>
     </div>
 </body>
-</html> 
+
+</html>

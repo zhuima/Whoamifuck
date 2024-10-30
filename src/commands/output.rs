@@ -1,14 +1,13 @@
 use askama::Template;
 use chrono::{FixedOffset, Local, Utc};
 use clap::Parser;
+use mac_address::get_mac_address;
 use std::env;
 use std::fs::{self, File};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use sysinfo::{CpuExt, ProcessExt, System, SystemExt};
-
-use crate::commands::{quick::Quick, special::Special};
+use sysinfo::{ProcessExt, System, SystemExt};
 
 #[derive(Template)]
 #[template(path = "report.html")]
@@ -27,9 +26,11 @@ struct SystemInfo {
     hostname: String,
     os_version: String,
     kernel_version: String,
-    cpu_usage: f32,
-    memory_usage: f32,
+    cpu_usage: String,
+    memory_usage: String,
     disk_usage: String,
+    mac_address: String,
+    ip_address: String,
 }
 
 #[derive(Parser, Debug)]
@@ -38,12 +39,12 @@ pub struct Output {
     #[arg(short, long, help = "output to file", default_value_t = false)]
     pub output: bool,
 
-    #[arg(short, long, help = "output to terminal", default_value_t = false)]
+    #[arg(short = 'm', long, help = "output to html", default_value_t = false)]
     pub html: bool,
 }
 
 #[allow(clippy::unused_self)]
-#[allow(dead_code)]
+
 impl Output {
     pub fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
         if self.output {
@@ -249,22 +250,40 @@ impl Output {
     }
 
     fn generate_html_report(&self) -> Result<(), Box<dyn std::error::Error>> {
+        println!("\n{}", "=".repeat(50));
+        println!("Generating HTML Report...");
+        println!("{}", "=".repeat(50));
+
         // 创建输出目录
         let output_dir = PathBuf::from("output/html");
+        println!("Creating output directory: {}", output_dir.display());
         fs::create_dir_all(&output_dir)?;
 
         // 收集系统信息
-        let system_info = self.collect_system_info()?;
+        println!("Collecting system information...");
+        let system_info = self.collect_system_info();
 
         // 收集其他信息
-        let process_info = self.collect_process_info()?;
-        let network_info = self.collect_network_info()?;
+        println!("Collecting process information...");
+        let process_info = self.collect_process_info();
+
+        println!("Collecting network information...");
+        let network_info = self.collect_network_info();
+
+        println!("Collecting user information...");
         let user_info = self.collect_user_info()?;
+
+        println!("Collecting history information...");
         let history_info = self.collect_history_info()?;
+
+        println!("Collecting crontab information...");
         let crontab_info = self.collect_crontab_html_info()?;
+
+        println!("Collecting file information...");
         let file_info = self.collect_file_info()?;
 
         // 生成报告
+        println!("Creating report template...");
         let template = ReportTemplate {
             timestamp: Local::now().format("%Y-%m-%d %H:%M:%S").to_string(),
             system_info,
@@ -277,35 +296,89 @@ impl Output {
         };
 
         // 渲染模板
-        let html = template.render()?;
+        println!("Rendering HTML template...");
+        let html = template.render().map_err(|e| {
+            println!("Error rendering template: {e}");
+            e
+        })?;
 
         // 保存报告
         let report_path = output_dir.join(format!(
             "report_{}.html",
             Local::now().format("%Y%m%d_%H%M%S")
         ));
+        println!("Saving report to: {}", report_path.display());
         fs::write(&report_path, html)?;
 
-        println!("HTML report generated: {}", report_path.display());
+        println!("\nHTML report generated successfully!");
+        println!("Report location: {}", report_path.display());
         Ok(())
     }
 
-    fn collect_system_info(&self) -> Result<SystemInfo, Box<dyn std::error::Error>> {
+    #[allow(clippy::cast_precision_loss, clippy::cast_possible_truncation)]
+    fn collect_system_info(&self) -> SystemInfo {
         let mut sys = System::new_all();
         sys.refresh_all();
 
-        Ok(SystemInfo {
+        // 获取 CPU 信息
+        let cpu_count = sys.cpus().len();
+        let cpu_info = format!("Total: {cpu_count} CPUs");
+
+        // 获取内存信息（转换为 GB）
+        let total_memory_gb = sys.total_memory() as f64 / (1024.0 * 1024.0);
+        let memory_info = format!("Total: {total_memory_gb:.2} GB");
+
+        // 获取磁盘信息
+        let disk_info = if let Ok(output) = Command::new("df").args(["-h", "/"]).output() {
+            let output_str = String::from_utf8_lossy(&output.stdout);
+            if let Some(line) = output_str.lines().nth(1) {
+                if let Some(size) = line.split_whitespace().nth(1) {
+                    format!("Total: {size}")
+                } else {
+                    "Unknown".to_string()
+                }
+            } else {
+                "Unknown".to_string()
+            }
+        } else {
+            "Unknown".to_string()
+        };
+
+        // 获取 MAC 地址
+        let mac_address = get_mac_address()
+            .ok()
+            .flatten()
+            .map_or_else(|| "Unknown".to_string(), |mac| mac.to_string());
+
+        // 获取所有网络接口的 IP 地址
+        let ip_addresses = if let Ok(output) = Command::new("ip").args(["addr", "show"]).output() {
+            let output_str = String::from_utf8_lossy(&output.stdout);
+            let mut addresses = Vec::new();
+            for line in output_str.lines() {
+                if line.contains("inet ") {
+                    if let Some(ip) = line.split_whitespace().nth(1) {
+                        addresses.push(ip.to_string());
+                    }
+                }
+            }
+            addresses.join(", ")
+        } else {
+            "Unknown".to_string()
+        };
+
+        SystemInfo {
             hostname: sys.host_name().unwrap_or_default(),
             os_version: sys.os_version().unwrap_or_default(),
             kernel_version: sys.kernel_version().unwrap_or_default(),
-            cpu_usage: sys.cpus().iter().map(CpuExt::cpu_usage).sum::<f32>()
-                / sys.cpus().len() as f32,
-            memory_usage: (sys.used_memory() as f64 / sys.total_memory() as f64 * 100.0) as f32,
-            disk_usage: String::new(), // 使用 df 命令获取
-        })
+            cpu_usage: cpu_info,
+            memory_usage: memory_info,
+            disk_usage: disk_info,
+            mac_address,
+            ip_address: ip_addresses,
+        }
     }
 
-    fn collect_process_info(&self) -> Result<String, Box<dyn std::error::Error>> {
+    fn collect_process_info(&self) -> String {
         let mut output = String::new();
         let mut sys = System::new_all();
         sys.refresh_all();
@@ -318,12 +391,34 @@ impl Output {
                 process.cpu_usage()
             ));
         }
-        Ok(output)
+        output
     }
 
-    fn collect_network_info(&self) -> Result<String, Box<dyn std::error::Error>> {
-        let output = Command::new("netstat").args(["-tuln"]).output()?;
-        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    #[allow(clippy::unnecessary_wraps)]
+    fn collect_network_info(&self) -> String {
+        let mut output = String::new();
+
+        // 获取网络接口信息
+        if let Ok(if_output) = Command::new("ip").args(["addr", "show"]).output() {
+            output.push_str("Network Interfaces:\n");
+            output.push_str(&String::from_utf8_lossy(&if_output.stdout));
+            output.push('\n');
+        }
+
+        // 获取路由信息
+        if let Ok(route_output) = Command::new("ip").args(["route", "show"]).output() {
+            output.push_str("\nRouting Table:\n");
+            output.push_str(&String::from_utf8_lossy(&route_output.stdout));
+            output.push('\n');
+        }
+
+        // 获取监听端口
+        if let Ok(netstat_output) = Command::new("netstat").args(["-tuln"]).output() {
+            output.push_str("\nListening Ports:\n");
+            output.push_str(&String::from_utf8_lossy(&netstat_output.stdout));
+        }
+
+        output
     }
 
     fn collect_user_info(&self) -> Result<String, Box<dyn std::error::Error>> {
@@ -342,10 +437,47 @@ impl Output {
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
 
+    #[allow(clippy::unnecessary_wraps)]
     fn collect_file_info(&self) -> Result<String, Box<dyn std::error::Error>> {
-        let output = Command::new("find")
-            .args(["/", "-type", "f", "-mtime", "-3"])
-            .output()?;
-        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+        println!("Searching for recently modified files...");
+        let mut output = String::new();
+
+        // 定义要搜索的重要目录
+        let important_dirs = [
+            "/etc",
+            "/var/log",
+            "/var/www",
+            "/home",
+            "/usr/local/bin",
+            "/tmp",
+        ];
+
+        for dir in &important_dirs {
+            println!("Checking directory: {dir}");
+            if let Ok(find_output) = Command::new("find")
+                .args([
+                    dir,
+                    "-type",
+                    "f",
+                    "-mtime",
+                    "-3",
+                    "-maxdepth",
+                    "3", // 限制搜索深度
+                ])
+                .output()
+            {
+                let result = String::from_utf8_lossy(&find_output.stdout);
+                if !result.is_empty() {
+                    output.push_str(&format!("\nModified files in {dir}:\n"));
+                    output.push_str(&result);
+                }
+            }
+        }
+
+        if output.is_empty() {
+            output = "No recently modified files found in monitored directories.".to_string();
+        }
+
+        Ok(output)
     }
 }
