@@ -8,6 +8,9 @@ RUN apt-get update && \
     pkg-config \
     libssl-dev \
     musl-tools \
+    make \
+    perl \
+    gcc \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/whoamifuck
@@ -35,14 +38,12 @@ RUN apt-get update && \
     ca-certificates \
     pkg-config \
     libssl-dev \
-    bash-completion \  
+    bash-completion \
     && rm -rf /var/lib/apt/lists/*
 
 # 复制构建产物
 COPY --from=builder /usr/src/whoamifuck/target/release/whoamifuck /usr/local/bin/whoamifuck
 
-# 生成并安装补全脚本
-RUN whoamifuck complete bash > /usr/share/bash-completion/completions/whoamifuck
 
 # 设置入口点
 ENTRYPOINT ["whoamifuck"]

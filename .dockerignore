@@ -1,0 +1,50 @@
+# Rust specific
+/target
+**/*.rs.bk
+Cargo.lock
+
+# Git
+.git
+.gitignore
+.github
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE
+docs/
+
+# Development and test files
+tests/
+examples/
+benches/
+fixtures/
+
+# Build and configuration files
+.env
+.env.*
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Debug files
+*.log
+*.pid
+*.dump
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Project specific
+output/
+temp/
+*.bak
+*.tmp 
