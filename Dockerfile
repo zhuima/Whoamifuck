@@ -7,6 +7,7 @@ RUN apt-get update && \
     git \
     pkg-config \
     libssl-dev \
+    musl-tools \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/whoamifuck
@@ -27,15 +28,21 @@ RUN cargo build --release
 # 使用更小的基础镜像
 FROM debian:bullseye-slim
 
-# 安装运行时依赖，移除 systemctl
+# 安装运行时依赖
 RUN apt-get update && \
     apt-get install -y \
     procps \
     ca-certificates \
+    pkg-config \
+    libssl-dev \
+    bash-completion \  
     && rm -rf /var/lib/apt/lists/*
 
 # 复制构建产物
 COPY --from=builder /usr/src/whoamifuck/target/release/whoamifuck /usr/local/bin/whoamifuck
+
+# 生成并安装补全脚本
+RUN whoamifuck complete bash > /usr/share/bash-completion/completions/whoamifuck
 
 # 设置入口点
 ENTRYPOINT ["whoamifuck"]
