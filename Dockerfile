@@ -16,7 +16,7 @@ RUN apt-get update && \
 WORKDIR /usr/src/whoamifuck
 
 # 初始化 git 仓库
-COPY .git ./.git
+# COPY .git ./.git
 COPY . .
 
 # 确保 git 仓库正确初始化
