@@ -1,11 +1,12 @@
 #![warn(clippy::all, clippy::pedantic)]
 use clap::{Parser, Subcommand};
+use colored::Colorize;
 use commands::{misc::Misc, output::Output, quick::Quick, risk::Risk, special::Special};
 use std::env;
 use std::process;
 
 mod commands;
-mod utils; // 导入 utils 模块
+mod utils;
 
 const VERSION_INFO: &str = concat!(
     env!("CARGO_PKG_VERSION"),
@@ -16,14 +17,39 @@ const VERSION_INFO: &str = concat!(
     ")"
 );
 
-const BANNER: &str = r"
-__        __   _                            _____ _    _  ______ _  __
-\ \      / /__| | ___ ___  _ __ ___   ___  |  ___| |  | |  ____| |/ /
- \ \ /\ / / _ \ |/ __/ _ \| '_ ` _ \ / _ \ | |_  | |  | | |__  | ' / 
-  \ V  V /  __/ | (_| (_) | | | | | |  __/ |  _| | |__| |  __| | . \ 
-   \_/\_/ \___|_|\___\___/|_| |_| |_|\___| |_| who! \____/|_|    |_|\_\
-                                                                     
-";
+#[allow(clippy::format_in_format_args)]
+fn get_banner() -> String {
+    let banner = format!(
+        "\n{}\n{}\n{}\n{}\n{}\n{}\n{}",
+        " ██╗    ██╗██╗  ██╗ ██████╗  █████╗ ███╗   ███╗██╗    ███████╗██╗   ██╗ ██████╗██╗  ██╗"
+            .bright_red(),
+        " ██║root██║██║  ██║██╔═══██╗██╔══██╗████╗ ████║██║    ██╔════╝██║   ██║██╔════╝██║ ██╔╝"
+            .bright_red(),
+        " ██║ █╗ ██║███████║██║777██║███████║██╔████╔██║██║    █████╗  ██║   ██║██║<bug>█████╔╝ "
+            .bright_red(),
+        " ██║███╗██║██╔══██║██║   ██║██╔══██║██║╚██╔╝██║██║    ██╔══╝  ██║   ██║██║     ██╔═██╗ "
+            .bright_red(),
+        " ╚███╔███╔╝██║  ██║╚██████╔╝██║  ██║██║ ╚═╝ ██║██║    ██║     ╚██████╔╝╚██████╗██║  ██╗"
+            .bright_red(),
+        "  ╚══╝╚══╝ ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚═╝    ╚═╝ who! ╚═════╝  ╚═════╝╚═╝  ╚═╝"
+            .bright_red(),
+        format!(
+            "       Hi whoamifuck          v{}                by  - {}",
+            env!("CARGO_PKG_VERSION"),
+            env!("CARGO_PKG_AUTHORS").bright_blue()
+        )
+    );
+
+    let info = format!(
+        "{}\n{}\n{}\n{}",
+        r"________________________________________________________",
+        r": https://github.com/zhuima/whoamifuck                  :",
+        r": A Rust-based system security analysis and assessment  :",
+        r" ------------------------------------------------------"
+    );
+
+    format!("\n{banner}\n{}", info.yellow().bold())
+}
 
 #[derive(Parser)]
 #[command(
@@ -32,7 +58,7 @@ __        __   _                            _____ _    _  ______ _  __
     version = VERSION_INFO,
     about = "Whoamifuck，zhuima first open source tool. This is a tool written in Rust to detect intruders, after the function update, is not limited to checking users' login information.",
     long_about = None,
-    before_help = BANNER
+    before_help = get_banner()
 )]
 struct Cli {
     #[command(subcommand)]
@@ -92,9 +118,7 @@ async fn main() -> anyhow::Result<()> {
             }
         },
         None => {
-            // 打印帮助信息
             Cli::parse_from(["Whoamifuck", "--help"]);
-            // 正常退出，退出码为 0
             process::exit(0);
         }
     }
