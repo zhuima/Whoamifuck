@@ -8,71 +8,257 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-center mb-8">System Security Report</h1>
+<body class="bg-slate-100 min-h-screen">
+    <!-- 侧边导航栏 -->
+    <div class="fixed right-4 top-1/4 w-64 bg-white rounded-lg shadow-lg p-4 border border-gray-100">
+        <h3 class="text-lg font-semibold mb-4 text-gray-800">ON THIS PAGE</h3>
+        <nav class="space-y-2">
+            <a href="#system-info" class="block text-blue-600 hover:text-blue-800 transition-colors">System Information</a>
+            <a href="#process-info" class="block text-gray-600 hover:text-blue-600 transition-colors">Process Information</a>
+            <a href="#network-info" class="block text-gray-600 hover:text-blue-600 transition-colors">Network Information</a>
+            <a href="#user-info" class="block text-gray-600 hover:text-blue-600 transition-colors">User Information</a>
+            <a href="#history-info" class="block text-gray-600 hover:text-blue-600 transition-colors">Command History</a>
+            <a href="#crontab-info" class="block text-gray-600 hover:text-blue-600 transition-colors">Crontab Information</a>
+            <a href="#file-info" class="block text-gray-600 hover:text-blue-600 transition-colors">File Information</a>
+        </nav>
+    </div>
 
-        <!-- 系统信息 -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold mb-4">System Information</h2>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <p class="text-gray-600">Hostname: {{ system_info.hostname }}</p>
-                    <p class="text-gray-600">OS Version: {{ system_info.os_version }}</p>
-                    <p class="text-gray-600">Kernel: {{ system_info.kernel_version }}</p>
-                    <p class="text-gray-600">MAC Address: {{ system_info.mac_address }}</p>
-                    <p class="text-gray-600">IP Address: {{ system_info.ip_address }}</p>
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- 头部标题 -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg shadow-lg p-8 mb-8">
+            <h1 class="text-4xl font-bold text-white text-center">System Security Report</h1>
+            <p class="text-blue-100 text-center mt-2">Comprehensive system analysis and security assessment</p>
+        </div>
+
+        <!-- 系统信息卡片 -->
+        <div id="system-info" class="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100 scroll-mt-8">
+            <div class="flex items-center mb-4">
+                <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <h2 class="text-xl font-semibold text-gray-800">System Information</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-500">Hostname:</span>
+                        <span class="font-mono text-gray-800">{{ system_info.hostname }}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-500">OS Version:</span>
+                        <span class="font-mono text-gray-800">{{ system_info.os_version }}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-500">Kernel:</span>
+                        <span class="font-mono text-gray-800">{{ system_info.kernel_version }}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-500">MAC Address:</span>
+                        <span class="font-mono text-gray-800">{{ system_info.mac_address }}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-500">IP Address:</span>
+                        <span class="font-mono text-gray-800">{{ system_info.ip_address }}</span>
+                    </div>
                 </div>
-                <div>
-                    <p class="text-gray-600">CPU: {{ system_info.cpu_usage }}</p>
-                    <p class="text-gray-600">Memory: {{ system_info.memory_usage }}</p>
-                    <p class="text-gray-600">Disk: {{ system_info.disk_usage }}</p>
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-500">CPU Total:</span>
+                        <span class="font-mono text-gray-800">{{ system_info.cpu_usage }}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-500">Memory:</span>
+                        <span class="font-mono text-gray-800">{{ system_info.memory_usage }}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-500">Disk:</span>
+                        <span class="font-mono text-gray-800">{{ system_info.disk_usage }}</span>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- 进程信息 -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold mb-4">Process Information</h2>
-            <pre class="bg-gray-50 p-4 rounded">{{ process_info }}</pre>
+        <div id="process-info" class="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100 scroll-mt-8">
+            <div class="flex items-center mb-4">
+                <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <h2 class="text-xl font-semibold text-gray-800">Process Information</h2>
+            </div>
+            <pre class="bg-gray-50 p-4 rounded-lg font-mono text-sm overflow-x-auto">{{ process_info }}</pre>
         </div>
 
         <!-- 网络信息 -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold mb-4">Network Information</h2>
-            <div class="overflow-x-auto">
-                <pre class="bg-gray-50 p-4 rounded whitespace-pre-wrap break-all">{{ network_info }}</pre>
+        <div id="network-info" class="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100 scroll-mt-8">
+            <div class="flex items-center mb-4">
+                <svg class="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                </svg>
+                <h2 class="text-xl font-semibold text-gray-800">Network Information</h2>
             </div>
+            <pre class="bg-gray-50 p-4 rounded-lg font-mono text-sm overflow-x-auto">{{ network_info }}</pre>
         </div>
 
         <!-- 用户信息 -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold mb-4">User Information</h2>
-            <pre class="bg-gray-50 p-4 rounded">{{ user_info }}</pre>
+        <div id="user-info" class="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100 scroll-mt-8">
+            <div class="flex items-center mb-4">
+                <svg class="w-6 h-6 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <h2 class="text-xl font-semibold text-gray-800">User Information</h2>
+            </div>
+            <pre class="bg-gray-50 p-4 rounded-lg font-mono text-sm overflow-x-auto">{{ user_info }}</pre>
         </div>
 
         <!-- 历史记录 -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold mb-4">Command History</h2>
-            <pre class="bg-gray-50 p-4 rounded">{{ history_info }}</pre>
+        <div id="history-info" class="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100 scroll-mt-8">
+            <div class="flex items-center mb-4">
+                <svg class="w-6 h-6 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h2 class="text-xl font-semibold text-gray-800">Command History</h2>
+            </div>
+            <pre class="bg-gray-50 p-4 rounded-lg font-mono text-sm overflow-x-auto">{{ history_info }}</pre>
         </div>
 
         <!-- 计划任务 -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold mb-4">Crontab Information</h2>
-            <pre class="bg-gray-50 p-4 rounded">{{ crontab_info }}</pre>
+        <div id="crontab-info" class="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100 scroll-mt-8">
+            <div class="flex items-center mb-4">
+                <svg class="w-6 h-6 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <h2 class="text-xl font-semibold text-gray-800">Crontab Information</h2>
+            </div>
+            <pre class="bg-gray-50 p-4 rounded-lg font-mono text-sm overflow-x-auto">{{ crontab_info }}</pre>
         </div>
 
         <!-- 文件信息 -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold mb-4">File Information</h2>
-            <pre class="bg-gray-50 p-4 rounded">{{ file_info }}</pre>
+        <div id="file-info" class="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100 scroll-mt-8">
+            <div class="flex items-center mb-4">
+                <svg class="w-6 h-6 text-teal-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <h2 class="text-xl font-semibold text-gray-800">File Information</h2>
+            </div>
+            <pre class="bg-gray-50 p-4 rounded-lg font-mono text-sm overflow-x-auto">{{ file_info }}</pre>
         </div>
 
-        <div class="text-center text-gray-500 text-sm mt-8">
-            Generated at {{ timestamp }}
+        <!-- 页脚 -->
+        <div class="text-center text-gray-500 text-sm mt-8 pb-8">
+            <p>Generated at {{ timestamp }}</p>
+            <p class="mt-2">Powered by Whoamifuck Security Scanner</p>
         </div>
+
+        <!-- 返回顶部按钮 -->
+        <button id="backToTop" 
+                class="fixed bottom-8 right-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg transition-all duration-300 opacity-80 hover:opacity-100">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            </svg>
+        </button>
     </div>
+
+    <!-- JavaScript for scroll spy -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取返回顶部按钮
+            const backToTop = document.getElementById('backToTop');
+            
+            // 获取所有导航链接和对应的部分
+            const navLinks = document.querySelectorAll('nav a');
+            const sections = document.querySelectorAll('[id]');
+            
+            // 初始隐藏返回顶部按钮
+            backToTop.style.display = 'none';
+            
+            // 返回顶部按钮点击事件
+            backToTop.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // 导航链接点击事件
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // 移除所有链接的高亮
+                    navLinks.forEach(l => {
+                        l.classList.remove('text-blue-600');
+                        l.classList.add('text-gray-600');
+                    });
+                    
+                    // 添加当前链接的高亮
+                    this.classList.remove('text-gray-600');
+                    this.classList.add('text-blue-600');
+                    
+                    // 滚动到目标位置
+                    const targetId = this.getAttribute('href').slice(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+            
+            // 滚动事件处理
+            let ticking = false;
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    window.requestAnimationFrame(function() {
+                        // 返回顶部按钮显示/隐藏
+                        if (window.pageYOffset > 300) {
+                            backToTop.style.display = 'block';
+                        } else {
+                            backToTop.style.display = 'none';
+                        }
+                        
+                        // 获取当前滚动位置
+                        const scrollPosition = window.scrollY + 300;
+                        
+                        // 找到当前可见的部分
+                        let currentSection = null;
+                        sections.forEach(section => {
+                            const sectionTop = section.offsetTop;
+                            const sectionBottom = sectionTop + section.offsetHeight;
+                            
+                            if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+                                currentSection = section;
+                            }
+                        });
+                        
+                        // 更新导航链接高亮状态
+                        if (currentSection) {
+                            const currentId = currentSection.getAttribute('id');
+                            navLinks.forEach(link => {
+                                const href = link.getAttribute('href').slice(1);
+                                if (href === currentId) {
+                                    link.classList.remove('text-gray-600');
+                                    link.classList.add('text-blue-600');
+                                } else {
+                                    link.classList.remove('text-blue-600');
+                                    link.classList.add('text-gray-600');
+                                }
+                            });
+                        }
+                        
+                        ticking = false;
+                    });
+                    
+                    ticking = true;
+                }
+            });
+            
+            // 初始化高亮状态
+            window.dispatchEvent(new Event('scroll'));
+        });
+    </script>
 </body>
 
 </html>

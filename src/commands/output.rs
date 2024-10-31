@@ -22,6 +22,7 @@ struct ReportTemplate {
     file_info: String,
 }
 
+#[allow(dead_code)]
 struct SystemInfo {
     hostname: String,
     os_version: String,
