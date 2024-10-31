@@ -7,6 +7,7 @@ description = "Whoamifuck 是 zhuima 的第一个 `Rust` 命令行开源工具�
 
 [dependencies]
 clap = { version = "4.0", features = ["derive", "cargo"] }
+clap_complete = "4.5"
 tokio = { version = "1", features = ["full"] }
 url = "2.3.1"
 sysinfo = "0.29.0"  # 用于获取进程信息

@@ -1,55 +1,14 @@
 #![warn(clippy::all, clippy::pedantic)]
 use clap::{Parser, Subcommand};
-use colored::Colorize;
-use commands::{misc::Misc, output::Output, quick::Quick, risk::Risk, special::Special};
+use commands::{
+    complete::Complete, misc::Misc, output::Output, quick::Quick, risk::Risk, special::Special,
+};
 use std::env;
 use std::process;
+use utils::banner::{get_banner, VERSION_INFO};
 
 mod commands;
 mod utils;
-
-const VERSION_INFO: &str = concat!(
-    env!("CARGO_PKG_VERSION"),
-    " (commit: ",
-    env!("GIT_HASH"),
-    ", built on: ",
-    env!("BUILD_DATE"),
-    ")"
-);
-
-#[allow(clippy::format_in_format_args)]
-fn get_banner() -> String {
-    let banner = format!(
-        "\n{}\n{}\n{}\n{}\n{}\n{}\n{}",
-        " ██╗    ██╗██╗  ██╗ ██████╗  █████╗ ███╗   ███╗██╗    ███████╗██╗   ██╗ ██████╗██╗  ██╗"
-            .bright_red(),
-        " ██║root██║██║  ██║██╔═══██╗██╔══██╗████╗ ████║██║    ██╔════╝██║   ██║██╔════╝██║ ██╔╝"
-            .bright_red(),
-        " ██║ █╗ ██║███████║██║777██║███████║██╔████╔██║██║    █████╗  ██║   ██║██║<bug>█████╔╝ "
-            .bright_red(),
-        " ██║███╗██║██╔══██║██║   ██║██╔══██║██║╚██╔╝██║██║    ██╔══╝  ██║   ██║██║     ██╔═██╗ "
-            .bright_red(),
-        " ╚███╔███╔╝██║  ██║╚██████╔╝██║  ██║██║ ╚═╝ ██║██║    ██║     ╚██████╔╝╚██████╗██║  ██╗"
-            .bright_red(),
-        "  ╚══╝╚══╝ ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚═╝    ╚═╝ who! ╚═════╝  ╚═════╝╚═╝  ╚═╝"
-            .bright_red(),
-        format!(
-            "       Hi whoamifuck          v{}                by  - {}",
-            env!("CARGO_PKG_VERSION"),
-            env!("CARGO_PKG_AUTHORS").bright_blue()
-        )
-    );
-
-    let info = format!(
-        "{}\n{}\n{}\n{}",
-        r"________________________________________________________",
-        r": https://github.com/zhuima/whoamifuck                  :",
-        r": A Rust-based system security analysis and assessment  :",
-        r" ------------------------------------------------------"
-    );
-
-    format!("\n{banner}\n{}", info.yellow().bold())
-}
 
 #[derive(Parser)]
 #[command(
@@ -77,6 +36,8 @@ enum Commands {
     Misc(Misc),
     #[command(about = "Output command for generating reports")]
     Output(Output),
+    #[command(about = "Generate shell completion scripts")]
+    Complete(Complete),
 }
 
 #[tokio::main]
@@ -123,6 +84,12 @@ async fn main() -> anyhow::Result<()> {
                 }
                 Commands::Output(output) => {
                     if let Err(e) = output.run() {
+                        eprintln!("Error: {e}");
+                        process::exit(1);
+                    }
+                }
+                Commands::Complete(complete) => {
+                    if let Err(e) = complete.run() {
                         eprintln!("Error: {e}");
                         process::exit(1);
                     }

@@ -1,3 +1,4 @@
+pub mod complete;
 pub mod misc;
 pub mod output;
 pub mod quick;

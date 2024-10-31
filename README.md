@@ -104,6 +104,23 @@ sequenceDiagram
 
 
 
+## 自动补全
+
+#### 生成 Bash 补全脚本：
+
+```bash
+yum install -y bash-completion  # 或 apt-get install bash-completion
+source <(whoamifuck complete bash)
+echo 'source <(whoamifuck complete bash)' >> ~/.bashrc
+```
+
+#### 生成 Zsh 补全脚本：
+
+```bash
+source <(whoamifuck complete zsh)
+echo 'source <(whoamifuck complete zsh)' >> ~/.zshrc
+```
+
 
 ## 使用指南
 
