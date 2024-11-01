@@ -39,7 +39,10 @@ enum Commands {
     Output(Output),
     #[command(about = "Generate shell completion scripts")]
     Complete(Complete),
-    #[command(about = "Check and update to the latest version")]
+    #[command(
+        about = "Check and update to the latest version",
+        long_about = "Automatically check and update Whoamifuck to the latest version from GitHub releases"
+    )]
     Update,
 }
 
@@ -47,20 +50,32 @@ enum Commands {
 async fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
-    // 在解析命令之前检查版本
-    // 如果当前命令不是 update，才检查版本
-    if !matches!(cli.command, Some(Commands::Update)) {
-        // 忽略检查版本时的错误，不影响主程序运行
+    // 检查是否是在执行补全相关的命令
+    let args: Vec<String> = std::env::args().collect();
+    #[allow(clippy::single_char_pattern)]
+    let is_completion = args.iter().any(|arg| {
+        arg.contains("complete") || 
+        arg.contains("completion") || 
+        arg.starts_with("_") ||  // bash completion 函数通常以下划线开头
+        std::env::var("COMP_LINE").is_ok() || // bash completion 环境变量
+        std::env::var("COMP_POINT").is_ok() // bash completion 环境变量
+    });
+
+    // 只在非补全命令且是交互式终端时检查更新
+    if !is_completion
+        && !matches!(cli.command, Some(Commands::Complete(_)))
+        && atty::is(atty::Stream::Stdout)
+    {
         let _ = update::check_version().await;
     }
 
-    #[allow(clippy::single_match_else)]
     match cli.command {
         Some(command) => {
             // 获取原始参数
             let matches = std::env::args().collect::<Vec<_>>();
             // 第一个参数是程序名，第二个是子命令名，所以如果长度<=2就表示没有额外参数
-            if matches.len() <= 2 {
+            // 不在补全模式下才显示帮助
+            if matches.len() <= 2 && !matches!(command, Commands::Update) && !is_completion {
                 // 获取子命令名称并显示对应的帮助信息
                 let subcommand = matches.get(1).map_or("", |s| s.as_str());
                 Cli::parse_from([env!("CARGO_PKG_NAME"), subcommand, "--help"]);
@@ -106,15 +121,17 @@ async fn main() -> anyhow::Result<()> {
                 }
                 Commands::Update => {
                     if let Err(e) = update::check_update().await {
-                        eprintln!("Update failed: {e}");
+                        eprintln!("Error: {e}");
                         process::exit(1);
                     }
                 }
             }
         }
         None => {
-            Cli::parse_from(["whoamifuck", "--help"]);
-            process::exit(0);
+            if !is_completion {
+                Cli::parse_from(["whoamifuck", "--help"]);
+                process::exit(0);
+            }
         }
     }
     Ok(())

@@ -1,6 +1,6 @@
 [package]
 name = "whoamifuck"
-version = "0.6.0"
+version = "0.7.0"
 edition = "2021"
 authors = ["zhuima <zhuima314@gmail.com>"]
 description = "A Rust-based system security analysis and assessment。"
@@ -22,6 +22,7 @@ openssl = { version = "0.10", features = ["vendored"] }
 colored = "2.0"
 semver = "1.0"
 self_update = { version = "0.41.0", features = ["archive-tar", "compression-flate2"] }
+atty = "0.2"  # 添加这一行
 
 
 [build-dependencies]
