@@ -4,6 +4,9 @@ Whoamifuck 是 zhuima 的第一个 `Rust` 命令行开源工具。这是一个�
 
 本仓库是`Rust`版本，Shell 版请参考[原版](https://github.com/enomothem/Whoamifuck)
 
+![alt text](./docs/demo.png)
+
+
 ## 功能特点
 
 - 快速命令用于基本操作
