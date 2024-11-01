@@ -8,6 +8,7 @@ use std::process;
 use utils::banner::{get_banner, VERSION_INFO};
 
 mod commands;
+mod update;
 mod utils;
 
 #[derive(Parser)]
@@ -15,7 +16,7 @@ mod utils;
     name = "Whoamifuck",
     author = env!("CARGO_PKG_AUTHORS"),
     version = VERSION_INFO,
-    about = "Whoamifuck，zhuima first open source tool. This is a tool written in Rust to detect intruders, after the function update, is not limited to checking users' login information.",
+    about = "A Rust-based system security analysis and assessment.",
     long_about = None,
     before_help = get_banner()
 )]
@@ -38,11 +39,20 @@ enum Commands {
     Output(Output),
     #[command(about = "Generate shell completion scripts")]
     Complete(Complete),
+    #[command(about = "Check and update to the latest version")]
+    Update,
 }
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
+
+    // 在解析命令之前检查版本
+    // 如果当前命令不是 update，才检查版本
+    if !matches!(cli.command, Some(Commands::Update)) {
+        // 忽略检查版本时的错误，不影响主程序运行
+        let _ = update::check_version().await;
+    }
 
     #[allow(clippy::single_match_else)]
     match cli.command {
@@ -91,6 +101,12 @@ async fn main() -> anyhow::Result<()> {
                 Commands::Complete(complete) => {
                     if let Err(e) = complete.run() {
                         eprintln!("Error: {e}");
+                        process::exit(1);
+                    }
+                }
+                Commands::Update => {
+                    if let Err(e) = update::check_update().await {
+                        eprintln!("Update failed: {e}");
                         process::exit(1);
                     }
                 }

@@ -3,7 +3,7 @@ name = "whoamifuck"
 version = "0.5.0"
 edition = "2021"
 authors = ["zhuima <zhuima314@gmail.com>"]
-description = "Whoamifuck 是 zhuima 的第一个 `Rust` 命令行开源工具。这是一个最初由 Shell 编写的用于检测入侵者的工具，本人使用Rust复刻了 Shell 版的完整的功能。"
+description = "A Rust-based system security analysis and assessment。"
 
 [dependencies]
 clap = { version = "4.0", features = ["derive", "cargo"] }
@@ -20,6 +20,8 @@ chrono = "0.4"
 askama = "0.12"  # 添加模板引擎依赖
 openssl = { version = "0.10", features = ["vendored"] }
 colored = "2.0"
+semver = "1.0"
+self_update = { version = "0.41.0", features = ["archive-tar", "compression-flate2"] }
 
 
 [build-dependencies]

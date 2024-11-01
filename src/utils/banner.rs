@@ -1,5 +1,7 @@
 use colored::Colorize;
 
+const BANNER_WIDTH: usize = 60;
+
 pub const VERSION_INFO: &str = concat!(
     "Version: ",
     env!("CARGO_PKG_VERSION"),
@@ -48,11 +50,18 @@ pub fn get_banner() -> String {
     );
 
     let info = format!(
-        "{}\n{}\n{}\n{}",
-        r"________________________________________________________",
-        r": https://github.com/zhuima/whoamifuck                  :",
-        r": A Rust-based system security analysis and assessment  :",
-        r" ------------------------------------------------------"
+        "{}\n{}\n{}\n{}\n{}",
+        "_".repeat(BANNER_WIDTH),
+        format!(
+            ": {:<50}",
+            "代码仓库地址: https://github.com/zhuima/whoamifuck"
+        ),
+        format!(": {:<50}", "小报童甄选专栏: https://xiaobaot.best"),
+        format!(
+            ": {:<50}",
+            "A Rust-based system security analysis and assessment"
+        ),
+        "-".repeat(BANNER_WIDTH)
     );
 
     format!("\n{banner}\n{}", info.yellow().bold())
