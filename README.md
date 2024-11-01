@@ -23,8 +23,8 @@ Whoamifuck 是 zhuima 的第一个 `Rust` 命令行开源工具。这是一个�
 
 ```bash
 git clone https://github.com/zhuima/Whoamifuck.git
-cd whoamifuck
-cargo build --release
+cd Whoamifuck
+make all
 ```
 
 
@@ -129,12 +129,12 @@ echo 'source <(whoamifuck complete zsh)' >> ~/.zshrc
 
 Whoamifuck 使用 Clap 库来构建命令行界面。以下是主要命令的使用方法：
 
-### 快速命令 (QUICK)
+### 快速命令 (quick)
 
 用于基本操作：
 
 ```bash
-./whoamifuck QUICK --user-device <设备名> --login <登录名> [--nomal] [--all]
+./whoamifuck quick --user-device <设备名> --login <登录名> [--nomal] [--all]
 ```
 
 
@@ -143,12 +143,12 @@ Whoamifuck 使用 Clap 库来构建命令行界面。以下是主要命令的使
 - `--nomal`：基本输出
 - `--all`：完整输出
 
-### 特殊命令 (SPECIAL)
+### 特殊命令 (special)
 
 用于高级操作：
 
 ```bash
-./whoamifuck SPECIAL --user-device <设备名> --login <登录名> [--nomal] [--all]
+./whoamifuck special --user-device <设备名> --login <登录名> [--nomal] [--all]
 ```
 
 
@@ -157,10 +157,10 @@ Whoamifuck 使用 Clap 库来构建命令行界面。以下是主要命令的使
 - `--port`：检查用户端口开放状态
 - `--os-status`：检查系统状态信息
 
-### 风险评估命令 (RISK)
+### 风险评估命令 (risk)
 
 ```bash
-./whoamifuck RISK --user-device <设备名> --login <登录名> [--nomal] [--all]
+./whoamifuck risk --user-device <设备名> --login <登录名> [--nomal] [--all]
 ```
 
 
@@ -171,10 +171,10 @@ Whoamifuck 使用 Clap 库来构建命令行界面。以下是主要命令的使
 - `--rootkitcheck`：检查系统 rootkit 信息
 - `--webshell`：检查 Web shell 信息（默认值：`/var/www/;/www/wwwroot/..`）
 
-### 杂项命令 (MISC)
+### 杂项命令 (misc)
 
 ```bash
-./whoamifuck MISC --user-device <设备名> --login <登录名> [--nomal] [--all]
+./whoamifuck misc --user-device <设备名> --login <登录名> [--nomal] [--all]
 ```
 
 
@@ -183,12 +183,12 @@ Whoamifuck 使用 Clap 库来构建命令行界面。以下是主要命令的使
 - `--auto-run`：设置 crontab 信息
 - `--ext`：自定义命令定义测试（默认值：`~/.whok/chief-inspector.conf`）
 
-### 输出命令 (OUTPUT)
+### 输出命令 (output)
 
 
 
 ```bash
-./whoamifuck OUTPUT --user-device <设备名> --login <登录名> [--nomal] [--all]
+./whoamifuck output 
 ```
 
 
@@ -197,40 +197,20 @@ Whoamifuck 使用 Clap 库来构建命令行界面。以下是主要命令的使
 
 ## 示例
 
-检查用户登录信息并输出基本信息：
-
-```bash
-./whoamifuck QUICK --user-device "服务器" --login "root" --nomal
-```
-
 
 进行安全基线检查并生成 HTML 报告：
 
 
-
 ```bash
-./whoamifuck OUTPUT --user-device "服务器" --login "root" --html
+./whoamifuck output --html
 ```
-
 
 
 ## 贡献
 
 欢迎提交 Pull Requests 来改进这个工具。在提交之前，请确保您的代码符合项目的编码规范并通过所有测试。
 
+
 ## 许可证
 
-MIT
-
-## 联系方式
-
-zhuima314@gmail.com
-
-## 参考资料
-
-- [Clap 文档, 案例一](https://mp.weixin.qq.com/s/XXqpHSO9jXBUUv5sJbOAbg)
-- [Clap 文档, 案例二](https://mp.weixin.qq.com/s/QJPq7pEvxzeYsL5U9W_CyA)
-- [Clap 文档, 案例三](https://mp.weixin.qq.com/s/ZjV31-zaO_3OWzwoT1gjjg)
-- [Clap 文档, 案例四](https://mp.weixin.qq.com/s/ZjV31-zaO_3OWzwoT1gjjg)
-
-
+[MIT](./LICENSE)
